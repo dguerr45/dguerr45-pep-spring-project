@@ -1,14 +1,15 @@
 package com.example.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import javax.websocket.server.PathParam;
 import java.util.Optional;
+import java.util.List;
 
 import com.example.service.*;
 import com.example.entity.*;
-
-
-
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -77,6 +78,12 @@ public class SocialMediaController {
         return ResponseEntity.status(401).build();
     }
     
+    /**
+     * Handler to submit a new post to the database.
+     * @param message a Message object provided within request body
+     * @return If message is valid and meets criteria, then API will return message with
+     *         message_id as JSON and 200 status. Otherwise, will return 400 status.
+     */
     @PostMapping("/messages")
     public ResponseEntity<Message> postMessageHandler(@RequestBody Message message){
         /**
@@ -94,4 +101,28 @@ public class SocialMediaController {
 
         return ResponseEntity.status(400).build();
     }
+
+    /**
+     * Handler to gather all messages from Message table.
+     * @return a List either containing all messages gathered from Message table
+     *         or an empty List if none exist. Status 200 is always returned.
+     */
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getMethodName() {
+        List<Message> allMessages = messageService.findAll();
+        return ResponseEntity.status(200).body(allMessages);
+    }
+    
+    /**
+     * Handler to retrieve a single message from Message table searching by message_id
+     * @param message_id int representing message_id provided by request path to search by
+     * @return message associated with provided message_id as JSON or empty response body if
+     *         no associated message is found. Status 200 is always returned.
+     */
+    @GetMapping("/messages/{message_id}")
+    public ResponseEntity<Message> findById(@PathVariable int message_id) {
+        Message returnedMessage = messageService.findById(message_id);
+        return ResponseEntity.status(200).body(returnedMessage);
+    }
+    
 }
