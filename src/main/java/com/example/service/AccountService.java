@@ -1,12 +1,13 @@
 package com.example.service;
 
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.repository.AccountRepository;
 import com.example.entity.Account;
 
 @Service
+@Transactional
 public class AccountService {
     private final AccountRepository accountRepo;
 
@@ -19,7 +20,6 @@ public class AccountService {
      * @param account an Account object
      * @return the newly created account with auto-generated ID, otherwise null
      */
-    @Transactional
     public Account addAccount(Account account){
         return this.accountRepo.save(account);
     }
@@ -29,6 +29,7 @@ public class AccountService {
      * @param username a String representing the account's username
      * @return account associated with the username if it exists, otherwise null
      */
+    @Transactional(readOnly = true)
     public Account findByUsername(String username){
         return this.accountRepo.findByUsername(username);
     }
