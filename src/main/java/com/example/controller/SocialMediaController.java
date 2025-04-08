@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.example.service.*;
@@ -17,17 +16,22 @@ import com.example.entity.*;
  */
 @RestController
 public class SocialMediaController {
-    @Autowired
     private final AccountService accountService;
-    @Autowired
     private final MessageService messageService;
 
-    // Class constructor with Bean injection
     public SocialMediaController(AccountService accountService, MessageService messageService){
         this.accountService = accountService;
         this.messageService = messageService;
     }
 
+    /**
+     * Handler to verify authentication of an entered account.
+     * @param account an Account object provided within request body
+     * @return If user is able to successfully authenticate by entering valid username/password,
+     *         then API will return account with account_id as JSON and 200 status.
+     *         Else if duplicate username is entered, will return 409 status.
+     *         Otherwise, will return 400 status.
+     */
     @PostMapping("/register")
     public ResponseEntity<Account> postUserHandler(@RequestBody Account account){
         /**
@@ -37,8 +41,8 @@ public class SocialMediaController {
          */
         if( !account.getUsername().isEmpty() &&
         account.getPassword().length() >= 4){
-            // if account exists, then 409 status code
-            if(accountService.getAccountByName(account.getUsername()) != null){
+            // if account username exists, then 409 status code
+            if(accountService.findByUsername(account.getUsername()) != null){
                 return ResponseEntity.status(409).build();
             } else {
                 account = accountService.addAccount(account);

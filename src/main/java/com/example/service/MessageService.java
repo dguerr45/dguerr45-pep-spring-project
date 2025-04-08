@@ -7,7 +7,6 @@ import com.example.repository.MessageRepository;
 
 @Service
 public class MessageService {
-    @Autowired
     private final MessageRepository messageRepo;
 
     public MessageService(MessageRepository messageRepo){
