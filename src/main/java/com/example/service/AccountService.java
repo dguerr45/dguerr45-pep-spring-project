@@ -2,6 +2,7 @@ package com.example.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import com.example.repository.AccountRepository;
 import com.example.entity.Account;
@@ -30,8 +31,16 @@ public class AccountService {
      * @return account associated with the username if it exists, otherwise null
      */
     @Transactional(readOnly = true)
-    public Account findByUsername(String username){
+    public Optional<Account> findByUsername(String username){
         return this.accountRepo.findByUsername(username);
     }
 
+    /**
+     * Will retrieve an account from Account table searching by id.
+     * @param id int representing the account's account_id
+     * @return account associated with the id if it exists, otherwise null
+     */
+    public Optional<Account> findById(int id){
+        return this.accountRepo.findById(Integer.valueOf(id));
+    }
 }
