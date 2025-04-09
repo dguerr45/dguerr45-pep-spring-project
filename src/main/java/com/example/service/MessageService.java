@@ -35,14 +35,18 @@ public class MessageService {
     /**
      * Will return single message from Database searching by message_id
      * @param message_id int representing message's message_id
-     * @return message associated with message_id or null if it doesn't exist
+     * @return an Optional object containing message associated with message_id or null
+     *         if it doesn't exist
      */
-    public Message findById(int message_id){
-        Optional<Message> result = this.messageRepo.findById(Integer.valueOf(message_id));
-        
-        if(result.isPresent()){
-            return result.get();
-        }
-        return null;
+    public Optional<Message> findById(int message_id){
+        return this.messageRepo.findById(Integer.valueOf(message_id));
+    }
+
+    /**
+     * Will delete a message from Message table if it exists, otherwise will do nothing
+     * @param message_id int representing message's message_id
+     */
+    public void deleteById(int message_id){
+        this.messageRepo.deleteById(message_id);
     }
 }

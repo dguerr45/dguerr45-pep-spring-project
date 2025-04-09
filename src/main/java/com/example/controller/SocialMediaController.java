@@ -1,10 +1,8 @@
 package com.example.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import javax.websocket.server.PathParam;
 import java.util.Optional;
 import java.util.List;
 
@@ -108,21 +106,65 @@ public class SocialMediaController {
      *         or an empty List if none exist. Status 200 is always returned.
      */
     @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getMethodName() {
+    public ResponseEntity<List<Message>> getAllMessagesHandler() {
         List<Message> allMessages = messageService.findAll();
         return ResponseEntity.status(200).body(allMessages);
     }
     
     /**
      * Handler to retrieve a single message from Message table searching by message_id
-     * @param message_id int representing message_id provided by request path to search by
+     * @param message_id int representing message_id provided by request path
      * @return message associated with provided message_id as JSON or empty response body if
      *         no associated message is found. Status 200 is always returned.
      */
     @GetMapping("/messages/{message_id}")
-    public ResponseEntity<Message> findById(@PathVariable int message_id) {
-        Message returnedMessage = messageService.findById(message_id);
-        return ResponseEntity.status(200).body(returnedMessage);
+    public ResponseEntity<Message> getMessageHandler(@PathVariable int message_id) {
+        Optional<Message> returnedMessage = messageService.findById(message_id);
+        if(returnedMessage.isPresent()){
+            return ResponseEntity.status(200).body(returnedMessage.get());
+        }
+        return ResponseEntity.status(200).build();        
     }
-    
+ 
+    /**
+     * Hnadler to delete message in Message table searching by message_id
+     * @param message_id int representing message_id provided by request path
+     * @return Will return 1 if message is delete, 0 otherwise. Status 200 is always
+     *         returned
+     */
+    @DeleteMapping("/messages/{message_id}")
+    public ResponseEntity<Integer> deleteMessageHandler(@PathVariable int message_id){
+        Optional<Message> message = messageService.findById(message_id);
+
+        if(message.isPresent()){
+            messageService.deleteById(message_id);
+            return ResponseEntity.status(200).body(1);
+        }
+        return ResponseEntity.status(200).build();
+    }
+
+    @PatchMapping("/messages/{message_id}")
+    public ResponseEntity<Integer> updateMessageHandler(@PathVariable int message_id, 
+        @RequestBody Message message){
+            Optional<Message> databaseMessage = messageService.findById(message_id);
+            
+            //if message to update doesn't exist in database
+            if(databaseMessage.isEmpty()){
+                return ResponseEntity.status(400).build();
+            }
+
+            /**
+             * checking if new message is valid:
+             * - message is not over 255 characters
+             * - message is not blank
+            */
+            if(message.getMessageText().length() <= 255 &&
+                !message.getMessageText().isEmpty()){
+                    databaseMessage.get().setMessageText(message.getMessageText());
+                    messageService.addMessage(databaseMessage.get());
+                    return ResponseEntity.status(200).body(1);
+                }
+        
+            return ResponseEntity.status(400).build();
+    }
 }
