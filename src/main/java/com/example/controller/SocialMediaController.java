@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.Optional;
@@ -62,7 +61,7 @@ public class SocialMediaController {
      * Otherwise, will return 401 status.
      */
     @PostMapping("/login")
-    public ResponseEntity<Account> postLoginHandler(@RequestBody Account account) {
+    public ResponseEntity<Account> postLoginHandler(@RequestBody Account account){
         /**
          * Verifying if account exists and that entered password matches password stored
          * in database. If both true, then succcessful authentication
@@ -106,7 +105,7 @@ public class SocialMediaController {
      *         or an empty List if none exist. Status 200 is always returned.
      */
     @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getAllMessagesHandler() {
+    public ResponseEntity<List<Message>> getAllMessagesHandler(){
         List<Message> allMessages = messageService.findAll();
         return ResponseEntity.status(200).body(allMessages);
     }
@@ -118,7 +117,7 @@ public class SocialMediaController {
      *         no associated message is found. Status 200 is always returned.
      */
     @GetMapping("/messages/{message_id}")
-    public ResponseEntity<Message> getMessageHandler(@PathVariable int message_id) {
+    public ResponseEntity<Message> getMessageHandler(@PathVariable int message_id){
         Optional<Message> returnedMessage = messageService.findById(message_id);
         if(returnedMessage.isPresent()){
             return ResponseEntity.status(200).body(returnedMessage.get());
@@ -166,5 +165,17 @@ public class SocialMediaController {
                 }
         
             return ResponseEntity.status(400).build();
+    }
+
+    /**
+     * Handler to retrieve all messages posted by a particular user
+     * @param account_id int representing user's account_id to search by
+     * @return List containing all messages posted by specified user, otherwise an empty List
+     *         if no messages exist
+     */
+    @GetMapping("/accounts/{account_id}/messages")
+    public ResponseEntity<List<Message>> getAllMessagesByUserHandler(@PathVariable int account_id){
+        List<Message> messagesByUser = messageService.findAllById(account_id);
+        return ResponseEntity.status(200).body(messagesByUser);
     }
 }

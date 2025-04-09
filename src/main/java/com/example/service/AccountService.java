@@ -40,6 +40,7 @@ public class AccountService {
      * @param id int representing the account's account_id
      * @return account associated with the id if it exists, otherwise null
      */
+    @Transactional(readOnly = true)
     public Optional<Account> findById(int id){
         return this.accountRepo.findById(Integer.valueOf(id));
     }

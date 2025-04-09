@@ -1,6 +1,7 @@
 package com.example.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import com.example.repository.MessageRepository;
 import com.example.entity.Message;
 
 @Service
+@Transactional
 public class MessageService {
     private final MessageRepository messageRepo;
 
@@ -28,6 +30,7 @@ public class MessageService {
      * Will return all messages from Message table
      * @return all messages as List or an empty List
      */
+    @Transactional(readOnly = true)
     public List<Message> findAll(){
         return this.messageRepo.findAll();
     }
@@ -38,6 +41,7 @@ public class MessageService {
      * @return an Optional object containing message associated with message_id or null
      *         if it doesn't exist
      */
+    @Transactional(readOnly = true)
     public Optional<Message> findById(int message_id){
         return this.messageRepo.findById(Integer.valueOf(message_id));
     }
@@ -48,5 +52,16 @@ public class MessageService {
      */
     public void deleteById(int message_id){
         this.messageRepo.deleteById(message_id);
+    }
+
+    /**
+     * Will retrieve all messages posted by a particular user from Message table
+     * @param account_id int representing user's account_id to search by
+     * @return List containing all messages posted by specified user, otherwise an empty List
+     *         if no messages exist
+     */
+    @Transactional(readOnly = true)
+    public List<Message> findAllById(int account_id){
+        return this.messageRepo.findAllByPostedBy(account_id);
     }
 }

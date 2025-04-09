@@ -8,7 +8,6 @@ import com.example.entity.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer>{
-
     /**
      * Will query Account table by given username
      * @param username a String representing the account's username
